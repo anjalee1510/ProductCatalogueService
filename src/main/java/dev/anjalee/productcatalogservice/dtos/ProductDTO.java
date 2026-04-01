@@ -1,5 +1,7 @@
 package dev.anjalee.productcatalogservice.dtos;
 
+import dev.anjalee.productcatalogservice.models.Category;
+import dev.anjalee.productcatalogservice.models.Product;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -59,5 +61,24 @@ public class ProductDTO {
 
     public void setCategoryDTO(CategoryDTO categoryDTO) {
         this.categoryDTO = categoryDTO;
+    }
+
+    public Product productDTOToProduct(ProductDTO productDTO) {
+        Product product = new Product();
+        product.setId(productDTO.getId());
+        product.setName(productDTO.getName());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setImageUrl(productDTO.getImageURL());
+        if(productDTO.getCategoryDTO()!=null){
+            Category category=new Category();
+            category.setId(productDTO.getCategoryDTO().getId());
+            category.setName(productDTO.getCategoryDTO().getName());
+            category.setDescription(productDTO.getCategoryDTO().getDescription());
+            product.setCategory(category);
+
+        }
+
+        return product;
     }
 }

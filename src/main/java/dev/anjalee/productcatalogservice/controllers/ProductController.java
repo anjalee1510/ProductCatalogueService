@@ -38,6 +38,10 @@ public class ProductController {
      @GetMapping("products/{id}")
      ProductDTO getProductById(@PathVariable("id") Long id){
           ProductDTO productDTO=new ProductDTO();
+
+          if(id<1){
+               throw new IllegalArgumentException("Invalid product ID(0 or negative");
+          }
           Product product=productService.getProductById(id);
           productDTO=product.productToProductDTO(product);
           return productDTO;
@@ -45,7 +49,23 @@ public class ProductController {
 
      @GetMapping("/products")
      List<ProductDTO> getAllProduct(){
-          List<ProductDTO> products=new ArrayList<>();
-          return products;
+
+          List<ProductDTO> productDTOs=new ArrayList<>();
+          List<Product> products=productService.getAllProducts();
+          for(Product product:products){
+               productDTOs.add(product.productToProductDTO(product));
+          }
+          return productDTOs;
+     }
+
+     @PutMapping("/products/{id}")
+     ProductDTO updateProduct(@PathVariable("id") Long id, @RequestBody ProductDTO productDTO){
+          Product product=productDTO.productDTOToProduct(productDTO);
+
+          Product product1=productService.replaceProduct(product,id);
+          if(product1 != null){
+               return product1.productToProductDTO(product1);
+          }
+          return null;
      }
 }

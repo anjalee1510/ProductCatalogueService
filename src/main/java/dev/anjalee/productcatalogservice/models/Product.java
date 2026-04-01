@@ -1,6 +1,7 @@
 package dev.anjalee.productcatalogservice.models;
 
 import dev.anjalee.productcatalogservice.dtos.CategoryDTO;
+import dev.anjalee.productcatalogservice.dtos.FakestoreProductDTO;
 import dev.anjalee.productcatalogservice.dtos.ProductDTO;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -74,5 +75,20 @@ public class Product extends BaseModel {
 
         }
         return productDTO;
+    }
+
+    public FakestoreProductDTO productToFakestoreProductDTO(Product product) {
+        FakestoreProductDTO fakestoreProductDTO = new FakestoreProductDTO();
+        fakestoreProductDTO.setId(product.getId());
+        fakestoreProductDTO.setTitle(product.getName());
+        fakestoreProductDTO.setDescription(product.getDescription());
+        fakestoreProductDTO.setPrice(product.getPrice());
+        fakestoreProductDTO.setImage(product.getImageUrl());
+        if(product.getCategory() != null) {
+
+            fakestoreProductDTO.setCategory(product.getCategory().getName());
+
+        }
+        return fakestoreProductDTO;
     }
 }
