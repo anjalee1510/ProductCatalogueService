@@ -3,6 +3,9 @@ package dev.anjalee.productcatalogservice.controllers;
 import dev.anjalee.productcatalogservice.dtos.ProductDTO;
 import dev.anjalee.productcatalogservice.models.Product;
 import dev.anjalee.productcatalogservice.services.IProductService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,7 +15,7 @@ import java.util.List;
 public class ProductController {
      private IProductService  productService;
 
-     public ProductController(IProductService productService) {
+     public ProductController(@Qualifier("storageProductService") IProductService productService) {
           this.productService = productService;
      }
      /*
@@ -27,24 +30,57 @@ public class ProductController {
      get all products ("/products"),GET
       */
      @PostMapping("/products")
-     ProductDTO createProduct(@RequestBody ProductDTO product){
-          ProductDTO productDTO =new ProductDTO();
+     ProductDTO createProduct(@RequestBody ProductDTO productDTO){
+          Product product=productDTO.productDTOToProduct(productDTO);
 
+          Product product1=productService.addProduct(product);
           /*
           call the service layer to save the product
            */
-          return productDTO;
+          if(product1!=null){
+               return product1.productToProductDTO(product1);
+          }
+          return null;
      }
      @GetMapping("products/{id}")
-     ProductDTO getProductById(@PathVariable("id") Long id){
-          ProductDTO productDTO=new ProductDTO();
+     ResponseEntity<ProductDTO> getProductById(@PathVariable("id") Long id){
 
-          if(id<1){
-               throw new IllegalArgumentException("Invalid product ID(0 or negative");
+          if (id < 0) {
+               throw new IllegalArgumentException("Product Id not found");
+          } else if(id == 0) {
+               throw new IllegalArgumentException("Products exist with positive id");
           }
-          Product product=productService.getProductById(id);
-          productDTO=product.productToProductDTO(product);
-          return productDTO;
+
+          //RestTemplate
+        /*
+        call the service layer to get the product by id
+         */
+
+//        if(id < 1){
+//            throw new IllegalArgumentException("Invalid Product ID(zero or negative)");
+//        }
+
+
+
+          Product product = productService.getProductById(id);
+
+
+          if(product == null){
+               return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+          }
+
+
+
+        /*
+        product
+        to productDTO
+
+        obj.from(obj) -> newObj
+         */
+
+          ProductDTO productDTO = product.productToProductDTO(product);
+
+          return new ResponseEntity<>(productDTO,HttpStatus.OK);
      }
 
      @GetMapping("/products")
